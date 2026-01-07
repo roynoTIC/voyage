@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Décompte Vacances au Sud</title>
+    <style>
+        :root {
+            --primary: #ea580c;
+            --secondary: #4f46e5;
+            --accent: #059669;
+            --bg-gradient: linear-gradient(135deg, #7dd3fc, #fdba74, #fef08a);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            padding: 6px 20px;
+            border-radius: 99px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #065f46;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(to bottom, #c2410c, #dc2626);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .target-date {
+            font-size: 14px;
+            font-weight: bold;
+            color: rgba(124, 45, 18, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Pensée du jour */
+        .thought-card {
+            background: #059669;
+            color: white;
+            padding: 20px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
+            border-bottom: 5px solid #064e3b;
+        }
+
+        .thought-icon {
+            font-size: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 15px;
+        }
+
+        /* Cartes Dodos/Lunchs */
+        .main-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            padding: 30px;
+            border-radius: 40px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover { transform: scale(1.02); }
+
+        .stat-card.dodos { background: #4f46e5; border-bottom: 8px solid #3730a3; }
+        .stat-card.lunchs { background: #f59e0b; border-bottom: 8px solid #d97706; }
+
+        .stat-value {
+            font-size: 70px;
+            font-weight: 900;
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-label {
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* Temps précis */
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid white;
+        }
+
+        .timer-value {
+            display: block;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+        }
+
+        .timer-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 900;
+        }
+
+        /* Checklist & Settings */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 40px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Checklist styles */
+        .checklist-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+        }
+
+        .btn-add {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checklist-items {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+
+        .item.completed span {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        /* Settings styles */
+        .setting-row {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+            color: #7c2d12;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 5px;
+            border-radius: 15px;
+            border: 1px solid #fed7aa;
+        }
+
+        .btn-count {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            border: none;
+            background: #ffedd5;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .counter-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 30px;
+            padding: 20px;
+            opacity: 0.6;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .timer-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <div class="badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8c0-2.76-2.46-5-5.5-5S2 5.24 2 8h2l1-1 1 1h4l1-1 1 1h2Z"/><path d="M13 7.14A5.82 5.82 0 0 1 16.5 6c3.04 0 5.5 2.24 5.5 5h-3l-1 1-1-1h-3"/><path d="M5.89 9.71c-2.15 2.15-2.3 5.47-.35 7.43l4.24-4.25.71.71-4.25 4.24c1.96 1.96 5.28 1.8 7.43-.35l-7.78-7.78Z"/><path d="M11 15.5c.5 2.5-.1 4.5-.7 7"/><path d="M13 15.5c2 2.5 4 3 7 1.5"/></svg>
+                Destination Sud
+            </div>
+            <h1>VIVA VACANCIAS</h1>
+            <p class="target-date">Départ le 1er Mars à 10h00</p>
+        </header>
+
+        <div class="thought-card">
+            <div class="thought-icon">✨</div>
+            <div>
+                <p style="font-size: 10px; font-weight: bold; text-transform: uppercase; opacity: 0.8;">Conseil du jour</p>
+                <p id="daily-thought" style="font-style: italic;">Préparez vos lunettes de soleil !</p>
+            </div>
+        </div>
+
+        <div class="main-stats">
+            <div class="stat-card dodos">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                <span class="stat-value" id="val-dodos">0</span>
+                <span class="stat-label">Dodos à faire</span>
+            </div>
+            <div class="stat-card lunchs">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+                <span class="stat-value" id="val-lunchs">0</span>
+                <span class="stat-label">Lunchs restants</span>
+            </div>
+        </div>
+
+        <div class="timer-grid">
+            <div class="timer-box">
+                <span class="timer-value" id="timer-days">0</span>
+                <span class="timer-label">Jours</span>
+            </div>
+            <div class="timer-box">
+                <span class="timer-value" id="timer-hours">0</span>
+                <span class="timer-label">Heures</span>
+            </div>
+            <div class="timer-box">
+                <span class="timer-value" id="timer-mins">0</span>
+                <span class="timer-label">Mins</span>
+            </div>
+            <div class="timer-box">
+                <span class="timer-value" id="timer-secs">0</span>
+                <span class="timer-label">Secs</span>
+            </div>
+        </div>
+
+        <div class="bottom-grid">
+            <div class="panel">
+                <h2>📋 Checklist Sud</h2>
+                <div class="checklist-input-group">
+                    <input type="text" id="todo-input" placeholder="Ex: Acheter tongs...">
+                    <button class="btn-add" id="todo-add">+</button>
+                </div>
+                <div class="checklist-items" id="todo-list">
+                    <!-- Items injectés par JS -->
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>⚙️ Réglages</h2>
+                <div class="setting-row">
+                    <span class="setting-label">Nombre de mangeurs</span>
+                    <div class="counter">
+                        <button class="btn-count" onclick="changePeople(-1)">-</button>
+                        <span class="counter-value" id="count-people">1</span>
+                        <button class="btn-count" onclick="changePeople(1)">+</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <span class="setting-label">Jours de congé prévus</span>
+                    <div class="counter">
+                        <button class="btn-count" onclick="changeHolidays(-1)">-</button>
+                        <span class="counter-value" id="count-holidays">0</span>
+                        <button class="btn-count" onclick="changeHolidays(1)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Préparez la crème solaire ! ✈️🏝️
+        </footer>
+
+    </div>
+
+    <script>
+        // --- DONNÉES ---
+        const targetDate = new Date(2026, 2, 1, 10, 0, 0);
+        let peopleCount = 1;
+        let holidayCount = 0;
+        let checklist = [
+            { id: 1, text: "Vérifier la validité du passeport", completed: false },
+            { id: 2, text: "Acheter de la crème solaire", completed: false },
+            { id: 3, text: "Trouver le maillot parfait", completed: false }
+        ];
+
+        const thoughts = [
+            "Le sable fin n'attend que vos pieds nus ! 🏝️",
+            "N'oubliez pas d'emporter un bon livre. 📖",
+            "Le secret ? Lâcher prise dès l'aéroport. ✈️",
+            "Le cocktail sera délicieux ! 🍹",
+            "Le soleil du sud est fort, protégez-vous ! ☀️",
+            "Imaginez déjà le bruit des vagues... 🌊",
+            "C'est le moment de sortir les lunettes ! 😎"
+        ];
+
+        // --- CALCULS ---
+        function updateAll() {
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                document.body.innerHTML = "<div style='min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f97316; color:white; font-size:40px; font-weight:900;'>C'EST LE DÉPART ! ✈️🏝️</div>";
+                return;
+            }
+
+            // Timer
+            document.getElementById('timer-days').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('timer-hours').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('timer-mins').innerText = Math.floor((diff / 1000 / 60) % 60);
+            document.getElementById('timer-secs').innerText = Math.floor((diff / 1000) % 60);
+
+            // Dodos
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const targetDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+            const dodos = Math.max(0, Math.round((targetDay - today) / (1000 * 60 * 60 * 24)));
+            document.getElementById('val-dodos').innerText = dodos;
+
+            // Lunchs
+            let workDays = 0;
+            let temp = new Date(now);
+            if (temp.getHours() >= 13) temp.setDate(temp.getDate() + 1);
+
+            while (temp < targetDate) {
+                const day = temp.getDay();
+                if (day !== 0 && day !== 6) workDays++;
+                temp.setDate(temp.getDate() + 1);
+            }
+            const lunchsTotal = Math.max(0, (workDays - holidayCount) * peopleCount);
+            document.getElementById('val-lunchs').innerText = lunchsTotal;
+        }
+
+        // --- UI ACTIONS ---
+        function changePeople(val) {
+            peopleCount = Math.max(1, peopleCount + val);
+            document.getElementById('count-people').innerText = peopleCount;
+            updateAll();
+        }
+
+        function changeHolidays(val) {
+            holidayCount = Math.max(0, holidayCount + val);
+            document.getElementById('count-holidays').innerText = holidayCount;
+            updateAll();
+        }
+
+        function renderChecklist() {
+            const list = document.getElementById('todo-list');
+            list.innerHTML = '';
+            checklist.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `item ${item.completed ? 'completed' : ''}`;
+                div.innerHTML = `
+                    <span style="font-size:20px">${item.completed ? '✅' : '⬜'}</span>
+                    <span>${item.text}</span>
+                `;
+                div.onclick = () => {
+                    item.completed = !item.completed;
+                    renderChecklist();
+                };
+                list.appendChild(div);
+            });
+        }
+
+        // --- INIT ---
+        window.onload = () => {
+            // Pensée du jour
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+            document.getElementById('daily-thought').innerText = thoughts[dayOfYear % thoughts.length];
+
+            // Checklist
+            renderChecklist();
+            document.getElementById('todo-add').onclick = () => {
+                const input = document.getElementById('todo-input');
+                if (input.value.trim()) {
+                    checklist.push({ id: Date.now(), text: input.value, completed: false });
+                    input.value = '';
+                    renderChecklist();
+                }
+            };
+
+            // Boucle de mise à jour
+            setInterval(updateAll, 1000);
+            updateAll();
+        };
+    </script>
+</body>
+</html>
